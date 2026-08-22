@@ -1,0 +1,1 @@
+Clone the repository → configure .env → docker compose up → start the API.

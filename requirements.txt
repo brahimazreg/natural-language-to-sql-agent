@@ -1,0 +1,29 @@
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+python-dotenv
+pytest
+httpx
+pypdf
+docx2txt
+psycopg[binary]
+langchain
+langchain-core
+langchain-community
+
+# llm provider
+langchain_text_splitters
+pdfminer.six
+google-generativeai
+# vectore store
+faiss-cpu
+langchain_google_genai 
+# web app
+streamlit
+python-dotenv
+sqlalchemy
+google-genai
+numpy
+
+psycopg
