@@ -5,7 +5,7 @@ from app.llm import generate_sql
 def main():
 
 
-    sql =generate_sql("How many students are enrolled in each program?")
+    sql =generate_sql("How many students are enrolled in each program??")
     print(sql)
 
 if __name__ =="__main__":
