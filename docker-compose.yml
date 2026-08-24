@@ -8,11 +8,12 @@ services:
       POSTGRES_USER: nl2sql_admin
       POSTGRES_PASSWORD: nl2sql_admin_password
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./database/init.sql:/docker-entrypoint-initdb.d/01-init.sql
       - ./database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
+      - ./database/roles.sql:/docker-entrypoint-initdb.d/03-roles.sql
 
 volumes:
   postgres_data:
