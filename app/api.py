@@ -1,8 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 from app.agent import run_agent
-
 
 app = FastAPI()
 
@@ -23,7 +22,12 @@ def home():
 
 @app.post("/query")
 def query(request: QuestionRequest):
+    try:
+        response = run_agent(request.query)
+        return {"answer": response}
 
-    response = run_agent(request.query)
-
-    return {"answer": response}
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=str(exc),
+        )
