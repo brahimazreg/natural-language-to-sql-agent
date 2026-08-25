@@ -1,21 +1,21 @@
 import os
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
-from app.schema_loader  import extract_schema ,format_schema
-
+from app.schema_loader import extract_schema, format_schema
 
 
 load_dotenv()
 
 gemini_api_key = os.getenv("GEMINI_API_KEY")
 
-llm=ChatGoogleGenerativeAI(model = "models/gemini-3.5-flash-lite", temperature=0 )
+llm = ChatGoogleGenerativeAI(
+    model="models/gemini-3.5-flash-lite",
+    temperature=0,
+)
 
 
 def generate_sql(question: str) -> str:
-
-    get_schema = extract_schema()
-    schema = format_schema(get_schema)
+    schema = format_schema(extract_schema())
 
     response = llm.invoke([
         (
@@ -52,6 +52,54 @@ Rules:
         ("human", question),
     ])
 
-    sql = response.content[0]["text"]
+    return response.content[0]["text"]
 
-    return sql
+
+def regenerate_sql(
+    question: str,
+    previous_sql: str,
+    validation_error: str,
+) -> str:
+    """
+    Regenerate SQL after the previous generated query failed validation.
+    """
+
+    schema = format_schema(extract_schema())
+
+    response = llm.invoke([
+        (
+            "system",
+            f"""
+You are a PostgreSQL SQL generation assistant.
+
+Generate a corrected SQL query for the user's question.
+
+DATABASE SCHEMA:
+{schema}
+
+The previous SQL query failed validation.
+
+PREVIOUS SQL:
+{previous_sql}
+
+VALIDATION ERROR:
+{validation_error}
+
+Correct the SQL using the validation error.
+
+Rules:
+- Generate PostgreSQL-compatible SQL.
+- Generate SELECT queries only.
+- Use only tables and columns present in the schema.
+- Never invent tables or columns.
+- Use the documented relationships when joining tables.
+- Never generate INSERT, UPDATE, DELETE, DROP, ALTER, CREATE, or TRUNCATE.
+- Return SQL only.
+- Do not return markdown.
+- Do not explain the SQL.
+"""
+        ),
+        ("human", question),
+    ])
+
+    return response.content[0]["text"]

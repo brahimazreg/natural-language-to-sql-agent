@@ -66,6 +66,7 @@ def validate_schema(sql: str, schema: dict) -> tuple[bool, str]:
 
         # Unqualified column:
         # SELECT first_name FROM students
+        
         else:
             matching_tables = [
                 table_name
@@ -77,6 +78,13 @@ def validate_schema(sql: str, schema: dict) -> tuple[bool, str]:
                 return False, (
                     f"Column '{column_name}' does not exist "
                     f"in the referenced tables."
+                )
+
+            if len(matching_tables) > 1:
+                return False, (
+                    f"Column '{column_name}' is ambiguous. "
+                    f"It exists in multiple referenced tables: "
+                    f"{', '.join(matching_tables)}."
                 )
 
     return True, ""

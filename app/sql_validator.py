@@ -1,25 +1,20 @@
-def validate_sql(sql: str) -> str:
+import sqlglot
 
-    if len(sql.strip()) == 0:
+def validate_sql(sql: str) -> str:
+    if not sql or not sql.strip():
         raise ValueError("Empty queries are not allowed")
 
-    sql_upper = sql.strip().upper()
+    try:
+        statements = sqlglot.parse(sql, read="postgres")
+    except sqlglot.ParseError as exc:
+        raise ValueError(f"Invalid SQL syntax: {exc}") from exc
 
-    forbidden = [
-        "DROP",
-        "DELETE",
-        "UPDATE",
-        "INSERT",
-        "ALTER",
-        "CREATE",
-        "TRUNCATE",
-    ]
+    if len(statements) != 1:
+        raise ValueError("Multiple SQL statements are not allowed")
 
-    for word in forbidden:
-        if word in sql_upper:
-            raise ValueError(f"Forbidden SQL operation: {word}")
+    statement = statements[0]
 
-    if not sql_upper.startswith("SELECT"):
+    if statement.key != "select":
         raise ValueError("Only SELECT queries are allowed")
 
     return sql

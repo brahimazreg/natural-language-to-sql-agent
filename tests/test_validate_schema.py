@@ -117,3 +117,19 @@ def test_reject_hallucinated_student_email():
 
     assert valid is False
     assert "email" in error
+
+def test_reject_ambiguous_unqualified_column():
+    schema = extract_schema()
+
+    sql = """
+        SELECT id
+        FROM students s
+        JOIN programs p
+            ON s.program_id = p.id
+    """
+
+    valid, error = validate_schema(sql, schema)
+
+    assert valid is False
+    assert "ambiguous" in error.lower()
+    assert "id" in error

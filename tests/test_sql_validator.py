@@ -42,4 +42,17 @@ def test_reject_whitespace_query():
 def test_delete_is_rejected():
     with pytest.raises(ValueError):
         validate_sql("DELETE FROM students")
+import pytest
+
+
+
+
+def test_multiple_select_statements_rejected():
+    sql = """
+        SELECT * FROM students;
+        SELECT * FROM programs;
+    """
+
+    with pytest.raises(ValueError, match="Multiple SQL statements"):
+        validate_sql(sql)
 
