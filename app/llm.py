@@ -47,6 +47,14 @@ Rules:
 - Return SQL only.
 - Do not return markdown.
 - Do not explain the SQL.
+- The generated SQL must directly answer the user's question.
+- Never silently substitute a different column or field for the one requested.
+- Never change the requested information into another type of information.
+- If the user requests information that cannot be answered using the provided
+  database schema, do not invent or substitute another field.
+- Do not generate a SELECT query that answers a different question.
+- If the user asks for student email addresses and the schema has no email    
+    column, do NOT return first_name and last_name instead.
 """
         ),
         ("human", question),

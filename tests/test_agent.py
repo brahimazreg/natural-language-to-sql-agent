@@ -114,9 +114,8 @@ def test_agent_rejects_hallucinated_column_after_three_attempts(monkeypatch):
     )
 
     with pytest.raises(ValueError, match="3 attempts"):
-        agent.run_agent("Show student emails")
+        agent.run_agent("Show student names")
 
-    # One initial generation + two regenerations = three attempts.
     assert generate_calls == 1
     assert regenerate_calls == 2
 
@@ -213,5 +212,32 @@ def test_agent_rejects_unsafe_sql_during_retry(monkeypatch):
 
     # One initial generation + two regenerations.
     assert regenerate_calls == 2
+def test_agent_rejects_unsupported_email_request(monkeypatch):
+    monkeypatch.setattr(
+        agent,
+        "execute_sql",
+        lambda sql: pytest.fail(
+            "Unsupported request reached database execution"
+        ),
+    )
 
+    with pytest.raises(ValueError, match="email"):
+        agent.run_agent(
+            "Show me student email addresses."
+        )
+
+
+def test_agent_rejects_unsupported_phone_request(monkeypatch):
+    monkeypatch.setattr(
+        agent,
+        "execute_sql",
+        lambda sql: pytest.fail(
+            "Unsupported request reached database execution"
+        ),
+    )
+
+    with pytest.raises(ValueError, match="phone"):
+        agent.run_agent(
+            "Show me student phone numbers."
+        )
  
